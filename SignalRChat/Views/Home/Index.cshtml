@@ -1,0 +1,78 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script src="~/js/signalr/dist/browser/signalr.js"></script>
+</head>
+<body>
+
+    <div class="container">
+
+        <h1>Chat-in</h1>
+
+        <input type="text" name="name" id="msg" value="" />
+
+
+        <button id="send" class="btn btn-primary">Send</button>
+
+        <ul id="chat">
+
+        </ul>
+    </div>
+
+
+    <script>
+
+        "use strict";
+
+        var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
+
+        //Disable send button until connection is established
+        //document.getElementById("sendButton").disabled = true;
+
+        connection.on("ReceiveMessage", function (msg) {
+
+            //$("body").css("background-color", "red");
+            $("ul").append("<li>" + msg + "</li>")
+
+        });
+
+        connection.start().then(function () {
+
+            console.log("Connection established")
+
+
+        }).catch(function (err) {
+            return console.error(err.toString());
+        });
+
+        //connection.on("UserConnected", function(connectionId))
+
+
+        $("#send").click(function () {
+
+            var message = $("#msg").val(); 
+            var groupElement = $("#group")
+
+            connection.invoke("SendMessage", message).catch(function (err) {
+                //return console.error(err.toString());
+            });
+
+            //event.preventDefault();
+        })
+
+    </script>
+</body>
+</html>
